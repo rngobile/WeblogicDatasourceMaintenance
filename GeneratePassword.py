@@ -5,10 +5,11 @@ from random import choice
 class GeneratePassword:
 
     def __init__(self):
+        #\8f(F%hL?y6Hh[BaT]o2Fw\aZ did not work.
         self.char_set = {'small': 'abcdefghijklmnopqrstuvwxyz',
                     'nums': '0123456789',
                     'big': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-                    'special': '^!\%/()=?{[]}+~#-_.:,;<>|\\'
+                    'special': '^!%/=?{[]}+~#-_.:,;<>|\\'
                     }
 
     def generate_pass(self, length=25):
