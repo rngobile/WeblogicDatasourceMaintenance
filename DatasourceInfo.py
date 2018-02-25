@@ -83,17 +83,28 @@ for jdbcResource in allJDBCResources:
 		pass
 	stopRedirect()	
 
+	serverRuntime()
+	cd('JDBCServiceRuntime/AdminServer/JDBCDataSourceRuntimeMBeans/' + dsname)
+	objArray = jarray.array([], java.lang.Object)
+	strArray = jarray.array([], java.lang.String)
+
+	testState = invoke('testPool',objArray,strArray)
+	if (testState == None):
+		state = "OK"
+	else:
+		state = 'Failed: ' + testState
+	
+	serverConfig()
+		
+	
+
 	print 'datasource.name.' + str(dsCounter) +'=' + str(dsname)
 	print 'datasource.jndiname.' + str(dsCounter) + '=' + str(dsJNDIname)
 	print 'datasource.driver.class.' + str(dsCounter) + '=' + dsDriver
 	print 'datasource.url.' + str(dsCounter) + '=' + conn
-	print 'datasource.readTimeout.' + str(dsCounter) + '=' + readTimeOut 
-	print 'datasource.connectionTimeout.' + str(dsCounter) + '=' + conTimeOut 
 	print 'datasource.username.' + str(dsCounter) + '=' + user
 	print 'datasource.password.' + str(dsCounter) + '=' + password
-	print 'datasource.initialCapacity.' + str(dsCounter) + '=' + str(dsInitialCap)
-	print 'datasource.maxCapacity.' + str(dsCounter) + '=' + str(dsMaxCap)
-	print 'datasource.target.' + str(dsCounter) + '=' + target
+	print 'datasource.state = ' + state
 	if not streamAsBlob :
 		getStreamAsBlob = 'false'
 	else :
