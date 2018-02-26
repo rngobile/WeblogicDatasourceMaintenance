@@ -1,19 +1,31 @@
 #!/usr/bin/python
+import sys,os,re
+from weblogic.security.internal import *
+from weblogic.security.internal.encryption import *
 
-def listDatasources():
-    # code
+class Datasource:
 
-def getStatus():
-    #code
+    def __init__(self, dataSourceArray):
+        self.name = dataSourceArray.getName()
+        self.user = get("/JDBCSystemResources/"+ self.name +"/Resource/" + self.name + "/JDBCDriverParams/" + self.name + "/Properties/" + self.name + "/Properties/user/Value")
 
-def startup():
-    #code
+    def getUser(self):
+        return self.user
 
-def shutdown():
-    #code
 
-def getUser():
-    #code
+"""
+    def getStatus():
+        #code
 
-def getPassword():
-    #code
+    def startup():
+        #code
+
+    def shutdown():
+        #code
+
+    def getUser():
+        #code
+
+    def getPassword():
+        #code
+"""
