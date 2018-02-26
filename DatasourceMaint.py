@@ -51,7 +51,7 @@ def getDatasourceInfo(cService):
 
         printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, isSID)
 
-def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus):
+def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, isSID):
     print "Name:\t\t" + dsName
     print "User:\t\t" + dsUser
     print "Password:\t" + dsPassword
