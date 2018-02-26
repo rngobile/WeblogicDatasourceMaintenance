@@ -25,6 +25,17 @@ def getDatasourceState(dsName):
     serverConfig()
     return status
 
+def getOracleDB(dsURL):
+    hostname = dsURL.split('/')[2].split(':')[0]
+    port = dsURL.split('/')[2].split(':')[1]
+    try:
+        sid = dsURL.split('/')[3]
+        isSID = True
+    except:
+        sid = dsURL.split('/')[2].split(':')[2]
+        isSID = False
+    return hostname, port, sid, isSID
+
 def getDatasourceInfo(cService):
     allJDBCResources = cmo.getJDBCSystemResources()
     for ds in allJDBCResources:
@@ -32,14 +43,25 @@ def getDatasourceInfo(cService):
         dsUser = get("/JDBCSystemResources/"+ dsName +"/Resource/" + dsName + "/JDBCDriverParams/" + dsName + "/Properties/" + dsName + "/Properties/user/Value")
         dsPassword = getPassword(cService, dsName)
         dsStatus = getDatasourceState(dsName)
+        dsURL = lower(ds.getJDBCDriverParams().getUrl())
+        dsDriver = lower(ds.getJDBCDriverParams().getDriverName())
+        if ("oracle" in dsURL) and ("oracle" in dsDriver):
+            host, port, sid, isSID = getOracleDB(dsURL)
+        #dsJNDI = dsResource.getJDBCDataSourceParams().getJNDINames()[0]
 
-        printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus)
+        printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, isSID)
 
 def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus):
     print "Name:\t\t" + dsName
     print "User:\t\t" + dsUser
     print "Password:\t" + dsPassword
-    print "Status:\t" + dsStatus
+    print "Status:\t\t" + dsStatus
+    print "\tHost:\t" + host
+    print "\tPort:\t" + port
+    if isSID:
+        print "\tSID:\t" + sid
+    else:
+        print "\tService Name:\t" + sid
     print "\n"
 
 def main():
