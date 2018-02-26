@@ -1,9 +1,9 @@
 #!/usr/bin/python
 #from OracleDB import *
-from GeneratePassword import *
 import sys,os,re
 from weblogic.security.internal import *
 from weblogic.security.internal.encryption import *
+from NewGeneratePassword import *
 
 def getPassword(cService, dsname):
     passwordAES = ''
@@ -62,6 +62,8 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, i
         print "\tSID:\t" + sid
     else:
         print "\tService Name:\t" + sid
+    password1 = NewGeneratePassword()
+    print password1.generate_pass()
     print "\n"
 
 def main():
@@ -107,7 +109,6 @@ def main():
 
     getDatasourceInfo(cService)
         
-    password1 = GeneratePassword()
     """
         db = OracleDB("192.168.254.134",1521,"soadb","rn_test",'\8f(F%hL?y6Hh[BaT]o2Fw\aZ',1)
         db.changePassword(password1.generate_pass())
