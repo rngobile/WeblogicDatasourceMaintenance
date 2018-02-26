@@ -43,8 +43,8 @@ def getDatasourceInfo(cService):
         dsUser = get("/JDBCSystemResources/"+ dsName +"/Resource/" + dsName + "/JDBCDriverParams/" + dsName + "/Properties/" + dsName + "/Properties/user/Value")
         dsPassword = getPassword(cService, dsName)
         dsStatus = getDatasourceState(dsName)
-        dsURL = ds.getJDBCDriverParams().getUrl().lower())
-        dsDriver = ds.getJDBCDriverParams().getDriverName().lower()
+        dsURL = ds.getJDBCResource().getJDBCDriverParams().getUrl().lower()
+        dsDriver = ds.getJDBCResource().getJDBCDriverParams().getDriverName().lower()
         if ("oracle" in dsURL) and ("oracle" in dsDriver):
             host, port, sid, isSID = getOracleDB(dsURL)
         #dsJNDI = dsResource.getJDBCDataSourceParams().getJNDINames()[0]
