@@ -33,14 +33,14 @@ class OracleDB:
                                             "newpwd" : str(self.newPassword)})
             result = self.cursor.fetchall()
             print result
-        except cx_Oracle.DatabaseError as e:
+        except cx_Oracle.DatabaseError, e:
             print e
     
     def changePassword(self, newPassword):
         self.newPassword = newPassword
         try:
             self.connection.changepassword(self.password,self.newPassword)
-        except cx_Oracle.DatabaseError as e:
+        except cx_Oracle.DatabaseError, e:
             print e 
         
     
