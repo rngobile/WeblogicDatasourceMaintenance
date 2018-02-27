@@ -27,7 +27,7 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
             arrayTargets = newTargets.split(' ')
             targetLength = len(arrayTargets)
 
-            elif targetLength == 1:
+            if targetLength == 1:
                 set('Targets', jarray.array([ObjectName(arrayTargets[0])],ObjectName))
             elif targetLength == 2:
                 set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1])],ObjectName))
