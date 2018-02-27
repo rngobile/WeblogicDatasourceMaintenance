@@ -34,6 +34,7 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
             print "targets address: " + str(hex(id(targets)))
             """
 
+            print "add: " + str(arrayTargets)
             #realized this will never happen, should remove
             if targetLength == 0:
                 set('Targets', jarray.array([],ObjectName))
@@ -42,9 +43,9 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
             elif targetLength == 2:
                 set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1])],ObjectName))
             elif targetLength == 3:
-                set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1]).rstrip(','),ObjectName(arrayTargets[2])],ObjectName))
+                set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1].rstrip(',')),ObjectName(arrayTargets[2])],ObjectName))
             elif targetLength == 4:
-                set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1]).rstrip(','),ObjectName(arrayTargets[2]).rstrip(','),ObjectName(arrayTargets[3])],ObjectName))
+                set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1].rstrip(',')),ObjectName(arrayTargets[2].rstrip(',')),ObjectName(arrayTargets[3])],ObjectName))
             else:
                 print dsName + ":Error - Target (" + str(arrayTargets) + ") Length is " + str(targetLength) + ": You're SOL."
 
@@ -63,6 +64,7 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
     except Exception, e:
         cancelEdit('y')
         print e
+        dumpStack()
 
 # ToDo: rename this method
 def getDatasourceState(dsName,command="testPool"):
@@ -96,7 +98,7 @@ def getDatasourceState(dsName,command="testPool"):
     return status
 
 def getOracleDB(dsURL):
-    #print dsURL
+    print "dsURL: " + str(dsURL)
     if len(dsURL.split('@')) == 2:
         dsn = dsURL.split('@')[1]
     else:
@@ -125,13 +127,13 @@ def getOracleDB(dsURL):
     return hostname, port, sid, isSID
 
 def getDatasourceInfo(cService):
-    linebreak = "=" * 200
+    linebreak = "=" * 215
     stringArray = []
     stringArray.append(linebreak)
     stringArray.append('|%s' % "Datasource".ljust(25) +
-                        '|%s' % "Username".center(15) +
+                        '|%s' % "Username".center(30) +
                         '|%s' % "Password".center(30) +
-                        '|%s' % "Host".center(20) +
+                        '|%s' % "Host".center(30) +
                         '|%s' % "Port".center(6) +
                         '|%s' % "SID/Service".center(15) +
                         '|%s' % "NewPassword".center(30) +
@@ -142,6 +144,7 @@ def getDatasourceInfo(cService):
     allJDBCResources = cmo.getJDBCSystemResources()
     for ds in allJDBCResources:
         dsName = ds.getName()
+        print "="*20 + " " + dsName + " " + "="*20
         dsUser = get("/JDBCSystemResources/"+ dsName +"/Resource/" + dsName + "/JDBCDriverParams/" + dsName + "/Properties/" + dsName + "/Properties/user/Value")
         dsPassword = getPassword(cService, dsName)
         dsStatus = getDatasourceState(dsName)
@@ -158,34 +161,20 @@ def getDatasourceInfo(cService):
 
 def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, isSID):
     #update: make this into an array
-    linebreak = '=' * 200
+    linebreak = '=' * 215
     prName = "|%s" % dsName.ljust(25)
-    prUser = "|%s" % dsUser.center(15)
-    prPassword = "|%s" % dsPassword.center(30)
-    prHost = "|%s" % host.center(20)
+    prUser = "|%s" % dsUser.center(20)
+    #prPassword = "|%s" % dsPassword.center(30)
+    prPassword = "|%s" % "<redacted>".center(30)
+    prHost = "|%s" % host.center(30)
     prPort = "|%s" % port.center(6)
     prStatus = "|%s" % dsStatus.center(50)
-    """
-    print "Name:\t\t" + dsName
-    print "User:\t\t" + dsUser
-    print "Password:\t" + dsPassword
-    print "Status:\t\t" + dsStatus
-    print "\tHost:\t" + host
-    print "\tPort:\t" + port
-    """
-    if isSID:
-        prSID = "|%s" % sid.center(15)
-        #print "\tSID:\t" + sid
-    else:
-        prSID = "|%s" % sid.center(15)
-        #print "\tService Name:\t" + sid
-    password1 = NewGeneratePassword()
-    prNewPassword = "|%s" % password1.generate_pass().center(30)
+    prSID = "|%s" % sid.center(15)
+
+    prNewPassword = "|%s" % NewGeneratePassword().generate_pass().center(30)
 
     #print prName + prUser + prPassword + prHost + prPort + prSID + prNewPassword + prStatus + '|'
     stringArray.append(prName + prUser + prPassword + prHost + prPort + prSID + prNewPassword + prStatus + '|')
-    #print "\tNew Password:\t" + password1.generate_pass()
-    #print linebreak
     stringArray.append(linebreak)
     return stringArray
 
@@ -194,12 +183,13 @@ def main():
     domain = sys.argv[2]
     hostUser = 'weblogic'
     hostPass = 'welcome1'
+    domain_path = '/u01/fmw/soa/user_projects/domains/'
 
     # you need to provide two parameters, environment and domain
     if environment == '' or domain == '' :
             print 'Please enter two parameters for environment and domain'
 
-    path = "/u01/fmw/soa/user_projects/domains/" + domain + "/security"
+    path = domain_path + domain + "/security"
 
     # if the environment is QAM
     if environment == 'DEV' :
