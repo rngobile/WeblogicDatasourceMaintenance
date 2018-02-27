@@ -125,7 +125,20 @@ def getOracleDB(dsURL):
     return hostname, port, sid, isSID
 
 def getDatasourceInfo(cService):
+    linebreak = "=" * 200
     stringArray = []
+    stringArray.append(linebreak)
+    stringArray.append('|%s' % "Datasource".ljust(25) +
+                        '|%s' % "Username".center(15) +
+                        '|%s' % "Password".center(30) +
+                        '|%s' % "Host".center(20) +
+                        '|%s' % "Port".center(6) +
+                        '|%s' % "SID/ServiceName".center(15) +
+                        '|%s' % "NewPassword".center(30) +
+                        '|%s' % "Status".center(50) 
+    )
+    strinArray.append(linebreak)
+
     allJDBCResources = cmo.getJDBCSystemResources()
     for ds in allJDBCResources:
         dsName = ds.getName()
@@ -146,7 +159,7 @@ def getDatasourceInfo(cService):
 def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, isSID):
     #update: make this into an array
     linebreak = '=' * 200
-    prName = "|%s" % dsName.ljust(20)
+    prName = "|%s" % dsName.ljust(25)
     prUser = "|%s" % dsUser.center(15)
     prPassword = "|%s" % dsPassword.center(30)
     prHost = "|%s" % host.center(20)
@@ -161,18 +174,18 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, s
     print "\tPort:\t" + port
     """
     if isSID:
-        prSID = "|%s" % sid.center(10)
+        prSID = "|%s" % sid.center(15)
         #print "\tSID:\t" + sid
     else:
-        prSID = "|%s" % sid.center(10)
+        prSID = "|%s" % sid.center(15)
         #print "\tService Name:\t" + sid
     password1 = NewGeneratePassword()
     prNewPassword = "|%s" % password1.generate_pass().center(30)
 
-    print prName + prUser + prPassword + prHost + prPort + prSID + prNewPassword + prStatus + '|'
+    #print prName + prUser + prPassword + prHost + prPort + prSID + prNewPassword + prStatus + '|'
     stringArray.append(prName + prUser + prPassword + prHost + prPort + prSID + prNewPassword + prStatus + '|')
     #print "\tNew Password:\t" + password1.generate_pass()
-    print linebreak
+    #print linebreak
     stringArray.append(linebreak)
     return stringArray
 
