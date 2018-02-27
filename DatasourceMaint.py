@@ -64,9 +64,7 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
     except Exception, e:
         cancelEdit('y')
         print e
-        status = 'Failed: ' + e
         dumpStack()
-    return status
 
 # ToDo: rename this method
 def getDatasourceState(dsName,command="testPool"):
@@ -95,7 +93,7 @@ def getDatasourceState(dsName,command="testPool"):
     else:
         print "Error: Available commands are testPool, start, shutdown."
     
-    status = configAdminServer(dsName, 'reset', targets)
+    configAdminServer(dsName, 'reset', targets)
     serverConfig()
     return status
 
