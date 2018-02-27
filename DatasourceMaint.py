@@ -37,7 +37,6 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
             print "No Need"
     except Exception, e:
         cancelEdit('y')
-        undo('true','y')
         print e
         dumpStack()
 
