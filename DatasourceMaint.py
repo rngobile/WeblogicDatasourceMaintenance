@@ -150,6 +150,8 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, i
         #print "\tService Name:\t" + sid
     password1 = NewGeneratePassword()
     prNewPassword = "|%s" % password1.generate_pass().center(30)
+
+    print prName + prUser + prPassword + prHost + prPort + prSID + prNewPassword + prStatus + '|'
     #print "\tNew Password:\t" + password1.generate_pass()
     print linebreak
 
