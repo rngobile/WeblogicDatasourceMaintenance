@@ -22,33 +22,7 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
             edit()
             startEdit()
             cd("/JDBCSystemResources/" + dsName)
-            tempTargets = list(targets)
-            tempTargets.append(ObjectName('com.bea:Name=AdminServer,Type=Server'))
-            newTargets = str(tempTargets).split('[')[1].split(']')[0]
-            arrayTargets = newTargets.split(' ')
-            targetLength = len(arrayTargets)
-
-            """
-            # yup, same memory address
-            print "tempTargets address: " +  str(hex(id(tempTargets)))
-            print "targets address: " + str(hex(id(targets)))
-            """
-
-            print "add: " + str(arrayTargets)
-            #realized this will never happen, should remove
-            if targetLength == 0:
-                set('Targets', jarray.array([],ObjectName))
-            elif targetLength == 1:
-                set('Targets', jarray.array([ObjectName(arrayTargets[0])],ObjectName))
-            elif targetLength == 2:
-                set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1])],ObjectName))
-            elif targetLength == 3:
-                set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1].rstrip(',')),ObjectName(arrayTargets[2])],ObjectName))
-            elif targetLength == 4:
-                set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1].rstrip(',')),ObjectName(arrayTargets[2].rstrip(',')),ObjectName(arrayTargets[3])],ObjectName))
-            else:
-                print dsName + ":Error - Target (" + str(arrayTargets) + ") Length is " + str(targetLength) + ": You're SOL."
-
+            cmo.addTarget(getMBean('/Servers/AdminServer'))
             save()
             activate()
         elif (manage == 'reset'):
@@ -63,6 +37,7 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
             print "No Need"
     except Exception, e:
         cancelEdit('y')
+        undo('true','y')
         print e
         dumpStack()
 
@@ -164,8 +139,8 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, s
     linebreak = '=' * 230
     prName = "|%s" % dsName.ljust(25)
     prUser = "|%s" % dsUser.center(30)
-    #prPassword = "|%s" % dsPassword.center(30)
-    prPassword = "|%s" % "<redacted>".center(30)
+    prPassword = "|%s" % dsPassword.center(30)
+    #prPassword = "|%s" % "<redacted>".center(30)
     prHost = "|%s" % host.center(30)
     prPort = "|%s" % port.center(6)
     prStatus = "|%s" % dsStatus.center(50)
