@@ -3,7 +3,7 @@ import sys,os,re
 from weblogic.security.internal import *
 from weblogic.security.internal.encryption import *
 from NewGeneratePassword import *
-from OracleDB import *
+#from OracleDB import *
 
 def getPassword(cService, dsname):
     passwordAES = ''
@@ -131,8 +131,8 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, i
     prName = "|%s" % dsName.ljust(15)
     prUser = "|%s" % dsUser.center(15)
     prPassword = "|%s" % dsPassword.center(30)
-    prHost = "|%s" % dsHost.center(15)
-    prPort = "|%s" % dsPort.center(6)
+    prHost = "|%s" % host.center(15)
+    prPort = "|%s" % port.center(6)
     prStatus = "|%s" % dsStatus.center(20)
     """
     print "Name:\t\t" + dsName
@@ -143,10 +143,10 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, i
     print "\tPort:\t" + port
     """
     if isSID:
-        prSID = "|%s" % dsSID.center(10)
+        prSID = "|%s" % sid.center(10)
         #print "\tSID:\t" + sid
     else:
-        prSID = "|%s" % dsSID.center(10)
+        prSID = "|%s" % sid.center(10)
         #print "\tService Name:\t" + sid
     password1 = NewGeneratePassword()
     prNewPassword = "|%s" % password1.generate_pass().center(30)
