@@ -100,7 +100,7 @@ def getOracleDB(dsURL):
     if len(dsURL.split('@')) == 2:
         dsn = dsURL.split('@')[1]
     else:
-        dsn = dsURL.split(',',2)[2]
+        dsn = dsURL.split('/',2)[2]
     
     if len(dsn.split(':')) == 3:
         hostname = dsn.split(':')[0]
@@ -108,7 +108,7 @@ def getOracleDB(dsURL):
         port = dsn.split(':')[1]
         isSID = False
     elif len(dsn.split(':')) == 2:
-        hostname = dsn.split(':')[0].lstrip('/')
+        hostname = dsn.split(':')[0]
         sid = dsn.split('/')[1]
         port = dsn.split(':')[1].split('/')[0]
         isSID = True
@@ -133,7 +133,7 @@ def getDatasourceInfo(cService):
                         '|%s' % "Password".center(30) +
                         '|%s' % "Host".center(20) +
                         '|%s' % "Port".center(6) +
-                        '|%s' % "SID/ServiceName".center(15) +
+                        '|%s' % "SID/Service".center(15) +
                         '|%s' % "NewPassword".center(30) +
                         '|%s' % "Status".center(50) 
     )
