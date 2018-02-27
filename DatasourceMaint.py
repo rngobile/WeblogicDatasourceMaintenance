@@ -83,7 +83,7 @@ def getDatasourceState(dsName,command="testPool"):
             else:
                 status = "Failed - " + checkDS
         except Exception, e:
-            status = 'Failed: ' + e
+            status = 'Failed: ' + str(e)
     elif (command == "shutdown") or (command == "start"):
         try:
             cd('JDBCServiceRuntime/AdminServer/JDBCDataSourceRuntimeMBeans/' + dsName)
