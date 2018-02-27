@@ -12,6 +12,45 @@ def getPassword(cService, dsname):
         passwordAES += chr(asciiCode)
     return cService.decrypt(passwordAES)
 
+# ToDo: Decouple this method into add and reset methods
+def configAdminServer(dsName, manage, targets, isTargeted=False):
+    if "com.bea:Name=AdminServer,Type=Server" in str(targets):
+        isTargeted = True
+    
+    try:
+        if (manage == 'add') and not (isTargeted):
+            edit()
+            startEdit()
+            cd("/JDBCSystemResources/" + dsName)
+            targets.append(ObjectName('com.bea:Name=AdminServer,Type=Server'))
+            newTargets = str(targets).split('[')[1].split(']')[0]
+            arrayTargets = newTargets.split(' ')
+            targetLength = len(arrayTargets)
+
+            if targetLength == 2:
+                set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1])],ObjectName))
+            elif targetLength == 3:
+                set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1]).rstrip(','),ObjectName(arrayTargets[2])],ObjectName))
+            elif targetLength == 4:
+                set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1]).rstrip(','),ObjectName(arrayTargets[2]).rstrip(','),ObjectName(arrayTargets[3])],ObjectName))
+            else:
+                print "Error - Target Length is " + targetLength + ": You're SOL."
+        
+        save()
+        activate()
+        elif (manage == 'reset'):
+            edit()
+            startEdit()
+            cd("/JDBCSystemResources/" + dsName)
+            set('Targets',targets)
+            save()
+            activate()
+        else:
+            print "No Need"
+    except Exception, e:
+        cancelEdit('y')
+        print e
+
 def getDatasourceState(dsName):
     serverRuntime()
     objArray = jarray.array([], java.lang.Object)
