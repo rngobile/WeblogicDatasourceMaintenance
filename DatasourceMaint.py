@@ -80,14 +80,32 @@ def getDatasourceState(dsName,command="testPool"):
     return status
 
 def getOracleDB(dsURL):
-    hostname = dsURL.split('/')[2].split(':')[0]
-    port = dsURL.split('/')[2].split(':')[1]
-    try:
-        sid = dsURL.split('/')[3]
-        isSID = True
-    except:
-        sid = dsURL.split('/')[2].split(':')[2]
+    #print dsURL
+    if len(dsURL.split('@')) == 2:
+        dsn = dsURL.split('@')[1]
+    else:
+        dsn = dsURL.split(',',2)[2]
+    
+    if len(dsn.split(':')) == 3:
+        hostname = dsn.split(':')[0]
+        sid = dsn.split(':')[2]
+        port = dsn.split(':')[1]
         isSID = False
+    elif len(dsn.split(':')) == 2:
+        hostname = dsn.split(':')[0]
+        sid = dsn.split('/')[1]
+        port = dsn.split(':')[1].split('/')[0]
+        isSID = True
+    else:
+        hostname = dsn.split('host=')[1].split(')')[0]
+        port = dsn.split('port=')[1].split(')')[0]
+        if 'service_name' in dsn:
+            sid = dsn.split('service_name=')[1].split(')')[0]
+            isSID = False
+        else:
+            sid = dsn.split('sid=')[1].split(')')[0]
+            isSID = True
+        
     return hostname, port, sid, isSID
 
 def getDatasourceInfo(cService):
