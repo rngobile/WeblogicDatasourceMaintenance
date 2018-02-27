@@ -22,16 +22,19 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
             edit()
             startEdit()
             cd("/JDBCSystemResources/" + dsName)
-            tempTargets = targets
+            tempTargets = list(targets)
             tempTargets.append(ObjectName('com.bea:Name=AdminServer,Type=Server'))
             newTargets = str(tempTargets).split('[')[1].split(']')[0]
             arrayTargets = newTargets.split(' ')
             targetLength = len(arrayTargets)
 
+            """
+            # yup, same memory address
             print "tempTargets address: " +  str(hex(id(tempTargets)))
             print "targets address: " + str(hex(id(targets)))
+            """
 
-
+            #realized this will never happen, should remove
             if targetLength == 0:
                 set('Targets', jarray.array([],ObjectName))
             elif targetLength == 1:
