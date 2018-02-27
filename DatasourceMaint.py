@@ -12,7 +12,7 @@ def getPassword(cService, dsname):
         passwordAES += chr(asciiCode)
     return cService.decrypt(passwordAES)
 
-# ToDo: Decouple this method into add and reset methods
+# ToDo: Decouple this method into add and reset methods, Figure a better way to do this.
 def configAdminServer(dsName, manage, targets, isTargeted=False):
     if "com.bea:Name=AdminServer,Type=Server" in str(targets):
         isTargeted = True
