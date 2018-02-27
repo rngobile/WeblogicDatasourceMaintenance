@@ -163,7 +163,7 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, s
     #update: make this into an array
     linebreak = '=' * 215
     prName = "|%s" % dsName.ljust(25)
-    prUser = "|%s" % dsUser.center(20)
+    prUser = "|%s" % dsUser.center(30)
     #prPassword = "|%s" % dsPassword.center(30)
     prPassword = "|%s" % "<redacted>".center(30)
     prHost = "|%s" % host.center(30)
