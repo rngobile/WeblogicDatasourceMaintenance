@@ -3,7 +3,7 @@ import sys,os,re
 from weblogic.security.internal import *
 from weblogic.security.internal.encryption import *
 from NewGeneratePassword import *
-#from OracleDB import *
+from OracleDB import *
 
 def getPassword(cService, dsname):
     passwordAES = ''
@@ -100,7 +100,7 @@ def getDatasourceState(dsName,command="testPool"):
 def getOracleDB(dsURL):
     print "dsURL: " + str(dsURL)
     if len(dsURL.split('@')) == 2:
-        dsn = dsURL.split('@')[1]
+        dsn = dsURL.split('@')[1].lstrip('/')
     else:
         dsn = dsURL.split('/',2)[2]
     
