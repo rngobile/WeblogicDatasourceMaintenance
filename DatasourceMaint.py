@@ -135,7 +135,7 @@ def getDatasourceInfo(cService):
                         '|%s' % "Port".center(6) +
                         '|%s' % "SID/Service".center(15) +
                         '|%s' % "NewPassword".center(30) +
-                        '|%s' % "Status".center(50) 
+                        '|%s' % "Status".center(50)  + '|'
     )
     stringArray.append(linebreak)
 
