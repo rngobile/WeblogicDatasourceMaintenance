@@ -28,6 +28,10 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
             arrayTargets = newTargets.split(' ')
             targetLength = len(arrayTargets)
 
+            print "tempTargets address: " +  str(hex(id(tempTargets)))
+            print "targets address: " + str(hex(id(targets)))
+
+
             if targetLength == 0:
                 set('Targets', jarray.array([],ObjectName))
             elif targetLength == 1:
