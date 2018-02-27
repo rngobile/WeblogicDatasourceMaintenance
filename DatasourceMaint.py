@@ -82,8 +82,8 @@ def getDatasourceState(dsName,command="testPool"):
                 status = "OK"
             else:
                 status = "Failed - " + checkDS
-        except:
-            status = 'Failed - Datasource not targeted to AdminServer'
+        except Exception, e:
+            status = 'Failed: ' + e
     elif (command == "shutdown") or (command == "start"):
         try:
             cd('JDBCServiceRuntime/AdminServer/JDBCDataSourceRuntimeMBeans/' + dsName)
@@ -135,7 +135,7 @@ def getDatasourceInfo(cService):
                         '|%s' % "Password".center(30) +
                         '|%s' % "Host".center(30) +
                         '|%s' % "Port".center(6) +
-                        '|%s' % "SID/Service".center(15) +
+                        '|%s' % "SID/Service Name".center(20) +
                         '|%s' % "NewPassword".center(30) +
                         '|%s' % "Status".center(50)  + '|'
     )
@@ -169,7 +169,7 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, s
     prHost = "|%s" % host.center(30)
     prPort = "|%s" % port.center(6)
     prStatus = "|%s" % dsStatus.center(50)
-    prSID = "|%s" % sid.center(15)
+    prSID = "|%s" % sid.center(20)
 
     prNewPassword = "|%s" % NewGeneratePassword().generate_pass().center(30)
 
