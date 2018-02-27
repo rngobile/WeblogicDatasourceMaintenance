@@ -22,8 +22,9 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
             edit()
             startEdit()
             cd("/JDBCSystemResources/" + dsName)
-            targets.append(ObjectName('com.bea:Name=AdminServer,Type=Server'))
-            newTargets = str(targets).split('[')[1].split(']')[0]
+            tempTargets = targets
+            tempTargets.append(ObjectName('com.bea:Name=AdminServer,Type=Server'))
+            newTargets = str(tempTargets).split('[')[1].split(']')[0]
             arrayTargets = newTargets.split(' ')
             targetLength = len(arrayTargets)
 
