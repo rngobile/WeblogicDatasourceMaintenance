@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import cx_Oracle
 
-class OracleDB:
+class CX_OracleDB:
 
     def __init__(self, host, port, sid, user, password, isSID):
         self.host = host
