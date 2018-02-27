@@ -124,19 +124,32 @@ def getDatasourceInfo(cService):
         printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, isSID)
 
 def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, isSID):
+    #update: make this into an array
+    linebreak = '=' * 200
+    prName = "|%s" % dsName.ljust(15)
+    prUser = "|%s" % dsUser.center(15)
+    prPassword = "|%s" % dsPassword.center(30)
+    prHost = "|%s" % dsHost.center(15)
+    prPort = "|%s" % dsPort.center(6)
+    prStatus = "|%s" % dsStatus.center(20)
+    """
     print "Name:\t\t" + dsName
     print "User:\t\t" + dsUser
     print "Password:\t" + dsPassword
     print "Status:\t\t" + dsStatus
     print "\tHost:\t" + host
     print "\tPort:\t" + port
+    """
     if isSID:
-        print "\tSID:\t" + sid
+        prSID = "|%s" % dsSID.center(10)
+        #print "\tSID:\t" + sid
     else:
-        print "\tService Name:\t" + sid
+        prSID = "|%s" % dsSID.center(10)
+        #print "\tService Name:\t" + sid
     password1 = NewGeneratePassword()
-    print "\tNew Password:\t" + password1.generate_pass()
-    print "\n"
+    prNewPassword = "|%s" % password1.generate_pass().center(30)
+    #print "\tNew Password:\t" + password1.generate_pass()
+    print linebreak
 
 def main():
     environment = sys.argv[1]
