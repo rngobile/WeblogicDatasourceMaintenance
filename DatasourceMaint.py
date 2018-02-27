@@ -137,7 +137,7 @@ def getDatasourceInfo(cService):
                         '|%s' % "NewPassword".center(30) +
                         '|%s' % "Status".center(50) 
     )
-    strinArray.append(linebreak)
+    stringArray.append(linebreak)
 
     allJDBCResources = cmo.getJDBCSystemResources()
     for ds in allJDBCResources:
