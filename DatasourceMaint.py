@@ -34,7 +34,7 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
             elif targetLength == 4:
                 set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1]).rstrip(','),ObjectName(arrayTargets[2]).rstrip(','),ObjectName(arrayTargets[3])],ObjectName))
             else:
-                print "Error - Target Length is " + str(targetLength) + ": You're SOL."
+                print "Error - Target (" + str(arrayTargets) + ") Length is " + str(targetLength) + ": You're SOL."
 
             save()
             activate()
@@ -42,6 +42,7 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
             edit()
             startEdit()
             cd("/JDBCSystemResources/" + dsName)
+            print "reset: " + str(targets)
             set('Targets',targets)
             save()
             activate()
@@ -55,6 +56,7 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
 def getDatasourceState(dsName,command="testPool"):
     targets = get("/JDBCSystemResources/" + dsName + "/Targets")
     configAdminServer(dsName,'add',targets)
+    print dsName + ":Are You Connected?" + str(get("/JDBCSystemResources/" + dsName + "/Targets"))
     serverRuntime()
     objArray = jarray.array([], java.lang.Object)
     strArray = jarray.array([], java.lang.String)
@@ -133,7 +135,7 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, i
     prPassword = "|%s" % dsPassword.center(30)
     prHost = "|%s" % host.center(15)
     prPort = "|%s" % port.center(6)
-    prStatus = "|%s" % dsStatus.center(20)
+    prStatus = "|%s" % dsStatus.center(40)
     """
     print "Name:\t\t" + dsName
     print "User:\t\t" + dsUser
