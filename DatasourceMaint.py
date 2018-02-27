@@ -27,14 +27,16 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
             arrayTargets = newTargets.split(' ')
             targetLength = len(arrayTargets)
 
-            if targetLength == 2:
+            elif targetLength == 1:
+                set('Targets', jarray.array([ObjectName(arrayTargets[0])],ObjectName))
+            elif targetLength == 2:
                 set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1])],ObjectName))
             elif targetLength == 3:
                 set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1]).rstrip(','),ObjectName(arrayTargets[2])],ObjectName))
             elif targetLength == 4:
                 set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1]).rstrip(','),ObjectName(arrayTargets[2]).rstrip(','),ObjectName(arrayTargets[3])],ObjectName))
             else:
-                print "Error - Target (" + str(arrayTargets) + ") Length is " + str(targetLength) + ": You're SOL."
+                print dsName + ":Error - Target (" + str(arrayTargets) + ") Length is " + str(targetLength) + ": You're SOL."
 
             save()
             activate()
@@ -130,12 +132,12 @@ def getDatasourceInfo(cService):
 def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, isSID):
     #update: make this into an array
     linebreak = '=' * 200
-    prName = "|%s" % dsName.ljust(15)
+    prName = "|%s" % dsName.ljust(20)
     prUser = "|%s" % dsUser.center(15)
     prPassword = "|%s" % dsPassword.center(30)
-    prHost = "|%s" % host.center(15)
+    prHost = "|%s" % host.center(20)
     prPort = "|%s" % port.center(6)
-    prStatus = "|%s" % dsStatus.center(40)
+    prStatus = "|%s" % dsStatus.center(50)
     """
     print "Name:\t\t" + dsName
     print "User:\t\t" + dsUser
