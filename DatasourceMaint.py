@@ -64,7 +64,9 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
     except Exception, e:
         cancelEdit('y')
         print e
+        status = 'Failed: ' + e
         dumpStack()
+    return status
 
 # ToDo: rename this method
 def getDatasourceState(dsName,command="testPool"):
@@ -93,7 +95,7 @@ def getDatasourceState(dsName,command="testPool"):
     else:
         print "Error: Available commands are testPool, start, shutdown."
     
-    configAdminServer(dsName, 'reset', targets)
+    status = configAdminServer(dsName, 'reset', targets)
     serverConfig()
     return status
 
@@ -127,7 +129,7 @@ def getOracleDB(dsURL):
     return hostname, port, sid, isSID
 
 def getDatasourceInfo(cService):
-    linebreak = "=" * 215
+    linebreak = "=" * 230
     stringArray = []
     stringArray.append(linebreak)
     stringArray.append('|%s' % "Datasource".ljust(25) +
@@ -161,7 +163,7 @@ def getDatasourceInfo(cService):
 
 def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, isSID):
     #update: make this into an array
-    linebreak = '=' * 215
+    linebreak = '=' * 230
     prName = "|%s" % dsName.ljust(25)
     prUser = "|%s" % dsUser.center(30)
     #prPassword = "|%s" % dsPassword.center(30)
