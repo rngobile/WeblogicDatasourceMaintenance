@@ -68,7 +68,7 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
 def getDatasourceState(dsName,command="testPool"):
     targets = get("/JDBCSystemResources/" + dsName + "/Targets")
     configAdminServer(dsName,'add',targets)
-    print dsName + ":Are You Connected?" + str(get("/JDBCSystemResources/" + dsName + "/Targets"))
+    print dsName + ":Are You Connected? " + str(get("/JDBCSystemResources/" + dsName + "/Targets"))
     serverRuntime()
     objArray = jarray.array([], java.lang.Object)
     strArray = jarray.array([], java.lang.String)
@@ -103,7 +103,7 @@ def getOracleDB(dsURL):
         dsn = dsURL.split(',',2)[2]
     
     if len(dsn.split(':')) == 3:
-        hostname = dsn.split(':')[0]
+        hostname = dsn.split(':')[0].lstrip('/')
         sid = dsn.split(':')[2]
         port = dsn.split(':')[1]
         isSID = False
