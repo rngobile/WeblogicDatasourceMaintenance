@@ -51,16 +51,31 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
         cancelEdit('y')
         print e
 
-def getDatasourceState(dsName):
+# ToDo: rename this method
+def getDatasourceState(dsName,command="testPool"):
+    targets = get("/JDBCSystemResources/" + dsName + "/Targets")
+    configAdminServer(dsName,'add',targets)
     serverRuntime()
     objArray = jarray.array([], java.lang.Object)
     strArray = jarray.array([], java.lang.String)
-    cd('JDBCServiceRuntime/AdminServer/JDBCDataSourceRuntimeMBeans/' + dsName)
-    checkDS = invoke('testPool',objArray,strArray)
-    if (checkDS == None):
-        status = "OK"
+    if command == "testPool":
+        try:
+            cd('JDBCServiceRuntime/AdminServer/JDBCDataSourceRuntimeMBeans/' + dsName)
+            checkDS = invoke('testPool',objArray,strArray)
+            if (checkDS == None):
+                status = "OK"
+            else:
+                status = "Failed - " + checkDS
+    elif (command == "shutdown") or (command == "start"):
+        try:
+            cd('JDBCServiceRuntime/AdminServer/JDBCDataSourceRuntimeMBeans/' + dsName)
+            checkDS = invoke(command,objArray,strArray)
+        except Exception, e:
+            print e
     else:
-        status = "Failed - " + checkDS
+        print "Error: Available commands are testPool, start, shutdown."
+    
+    configAdminServer(dsName, 'reset', targets)
     serverConfig()
     return status
 
