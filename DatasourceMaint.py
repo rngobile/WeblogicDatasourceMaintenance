@@ -103,12 +103,12 @@ def getOracleDB(dsURL):
         dsn = dsURL.split(',',2)[2]
     
     if len(dsn.split(':')) == 3:
-        hostname = dsn.split(':')[0].lstrip('/')
+        hostname = dsn.split(':')[0]
         sid = dsn.split(':')[2]
         port = dsn.split(':')[1]
         isSID = False
     elif len(dsn.split(':')) == 2:
-        hostname = dsn.split(':')[0]
+        hostname = dsn.split(':')[0].lstrip('/')
         sid = dsn.split('/')[1]
         port = dsn.split(':')[1].split('/')[0]
         isSID = True
@@ -125,6 +125,7 @@ def getOracleDB(dsURL):
     return hostname, port, sid, isSID
 
 def getDatasourceInfo(cService):
+    stringArray = []
     allJDBCResources = cmo.getJDBCSystemResources()
     for ds in allJDBCResources:
         dsName = ds.getName()
@@ -137,9 +138,12 @@ def getDatasourceInfo(cService):
             host, port, sid, isSID = getOracleDB(dsURL)
         #dsJNDI = dsResource.getJDBCDataSourceParams().getJNDINames()[0]
 
-        printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, isSID)
+        stringArray = printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, isSID)
+    for string in stringArray:
+        print string
 
-def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, isSID):
+
+def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, isSID):
     #update: make this into an array
     linebreak = '=' * 200
     prName = "|%s" % dsName.ljust(20)
@@ -166,8 +170,11 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, i
     prNewPassword = "|%s" % password1.generate_pass().center(30)
 
     print prName + prUser + prPassword + prHost + prPort + prSID + prNewPassword + prStatus + '|'
+    stringArray.append(prName + prUser + prPassword + prHost + prPort + prSID + prNewPassword + prStatus + '|')
     #print "\tNew Password:\t" + password1.generate_pass()
     print linebreak
+    stringArray.append(linebreak)
+    return stringArray
 
 def main():
     environment = sys.argv[1]
