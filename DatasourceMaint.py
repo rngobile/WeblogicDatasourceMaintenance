@@ -34,7 +34,7 @@ def configAdminServer(dsName, manage, targets, isTargeted=False):
             elif targetLength == 4:
                 set('Targets', jarray.array([ObjectName(arrayTargets[0].rstrip(',')),ObjectName(arrayTargets[1]).rstrip(','),ObjectName(arrayTargets[2]).rstrip(','),ObjectName(arrayTargets[3])],ObjectName))
             else:
-                print "Error - Target Length is " + targetLength + ": You're SOL."
+                print "Error - Target Length is " + str(targetLength) + ": You're SOL."
 
             save()
             activate()
