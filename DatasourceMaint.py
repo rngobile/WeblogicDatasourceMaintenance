@@ -64,6 +64,8 @@ def manageDS(dsName, allServers, command="testPool"):
                     cmo.start()
                 except Exception, e:
                     print e
+                print "dsName: " + state
+                return state
             elif command == "reset":
                 try:
                     cmo.reset()
@@ -158,7 +160,9 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords)
                 changeDSPassword(cService, dsName, newPassword)
             if state != "offline":
                 manageDS(dsName,allServers,"reset")
-                manageDS(dsName,allServers,"start")
+                bringUp = "Shutdown"
+                while bringUp not "Shutdown":
+                    bringUp = manageDS(dsName,allServers,"start")
         dsStatus = manageDS(dsName, allServers)
 
         stringArray = printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, newPassword, isSID)
