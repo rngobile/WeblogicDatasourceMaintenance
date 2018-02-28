@@ -160,9 +160,12 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords):
             state = manageDS(dsName, allServers, "shutdown")
             if ("oracle" in dsURL) and ("oracle" in dsDriver.lower()):
                 host, port, sid, isSID = getOracleDB(dsURL)
-                db = OracleDB(dsURL,dsUser,dsPassword,dsDriver)
-                db.changePassword(newPassword)
-                changeDSPassword(cService, dsName, newPassword)
+                error = db = OracleDB(dsURL,dsUser,dsPassword,dsDriver)
+                if error:
+                    print str(error)
+                else:
+                    db.changePassword(newPassword)
+                    changeDSPassword(cService, dsName, newPassword)
             if state == "offline":
                 manageDS(dsName,allServers,"start")
         dsStatus = manageDS(dsName, allServers)
