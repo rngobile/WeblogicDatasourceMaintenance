@@ -5,7 +5,6 @@ from weblogic.security.internal.encryption import *
 from NewGeneratePassword import *
 from OracleDB import *
 
-
 def changeDSPassword(cService, dsName, newPassword):
     try:
         print "-- Changing " + dsName + " password --"
@@ -26,67 +25,6 @@ def getPassword(cService, dsname):
     for asciiCode in passwordArrayEnc:
         passwordAES += chr(asciiCode)
     return cService.decrypt(passwordAES)
-
-""""
-# ToDo: Decouple this method into add and reset methods, Figure a better way to do this.
-def configAdminServer(dsName, manage, targets, isTargeted=False):
-    if "com.bea:Name=AdminServer,Type=Server" in str(targets):
-        isTargeted = True
-    
-    try:
-        if (manage == 'add') and not (isTargeted):
-            edit()
-            startEdit()
-            cd("/JDBCSystemResources/" + dsName)
-            cmo.addTarget(getMBean('/Servers/AdminServer'))
-            save()
-            activate()
-        elif (manage == 'reset'):
-            edit()
-            startEdit()
-            cd("/JDBCSystemResources/" + dsName)
-            print "reset: " + str(targets)
-            set('Targets',targets)
-            save()
-            activate()
-        else:
-            print "No Need"
-    except Exception, e:
-        cancelEdit('y')
-        print e
-        dumpStack()
-
-# ToDo: rename this method
-def getDatasourceState(dsName,command="testPool"):
-    targets = get("/JDBCSystemResources/" + dsName + "/Targets")
-    configAdminServer(dsName,'add',targets)
-    print dsName + ":Are You Connected? " + str(get("/JDBCSystemResources/" + dsName + "/Targets"))
-    serverRuntime()
-    objArray = jarray.array([], java.lang.Object)
-    strArray = jarray.array([], java.lang.String)
-    if command == "testPool":
-        try:
-            cd('JDBCServiceRuntime/AdminServer/JDBCDataSourceRuntimeMBeans/' + dsName)
-            checkDS = invoke('testPool',objArray,strArray)
-            if (checkDS == None):
-                status = "OK"
-            else:
-                status = "Failed - " + checkDS
-        except Exception, e:
-            status = 'Failed: ' + str(e)
-    elif (command == "shutdown") or (command == "start"):
-        try:
-            cd('JDBCServiceRuntime/AdminServer/JDBCDataSourceRuntimeMBeans/' + dsName)
-            checkDS = invoke(command,objArray,strArray)
-        except Exception, e:
-            print e
-    else:
-        print "Error: Available commands are testPool, start, shutdown."
-    
-    configAdminServer(dsName, 'reset', targets)
-    serverConfig()
-    return status
-"""
 
 def manageDS(dsName, allServers, command="testPool"):
     domainRuntime()
@@ -271,8 +209,5 @@ def main():
 
     getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords)
         
-    """
-        db = OracleDB("192.168.254.134",1521,"soadb","rn_test",'\8f(F%hL?y6Hh[BaT]o2Fw\aZ',1)
-        db.changePassword(password1.generate_pass())
-    """
-main()
+if __name__ == 'main':
+    main()
