@@ -5,6 +5,21 @@ from weblogic.security.internal.encryption import *
 from NewGeneratePassword import *
 from OracleDB import *
 
+
+def changeDSPassword(cService, dsName, newPassword):
+    try:
+        print "-- Changing " + dsName + " password --"
+        edit()
+        startEdit()
+        encryptedPassword = cService.encrypt(newPassword)
+        cd('/JDBCSystemResources/' + dsName + '/JDBCResource/' + dsName + '/JDBCDriverParams/' + dsName)
+        set('PasswordEncrypted',encryptedPassword)
+        save()
+        activate()
+    except Exception, e:
+        cancelEdit('y')
+        print e
+
 def getPassword(cService, dsname):
     passwordAES = ''
     passwordArrayEnc = get("/JDBCSystemResources/"+ dsname +"/Resource/" + dsname + "/JDBCDriverParams/" + dsname + "/PasswordEncrypted")
@@ -12,6 +27,7 @@ def getPassword(cService, dsname):
         passwordAES += chr(asciiCode)
     return cService.decrypt(passwordAES)
 
+""""
 # ToDo: Decouple this method into add and reset methods, Figure a better way to do this.
 def configAdminServer(dsName, manage, targets, isTargeted=False):
     if "com.bea:Name=AdminServer,Type=Server" in str(targets):
@@ -70,6 +86,7 @@ def getDatasourceState(dsName,command="testPool"):
     configAdminServer(dsName, 'reset', targets)
     serverConfig()
     return status
+"""
 
 def manageDS(dsName, allServers, command="testPool"):
     domainRuntime()
@@ -141,7 +158,7 @@ def getOracleDB(dsURL):
         
     return hostname, port, sid, isSID
 
-def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, isSID):
+def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, newPassword="",isSID=True):
     #update: make this into an array
     linebreak = '=' * 230
     prName = "|%s" % dsName.ljust(25)
@@ -152,7 +169,7 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, s
     prPort = "|%s" % port.center(6)
     prStatus = "|%s" % dsStatus.center(50)
     prSID = "|%s" % sid.center(20)
-    prNewPassword = "|%s" % NewGeneratePassword().generate_pass().center(30)
+    prNewPassword = "|%s" % newPassword.center(30)
 
     #print prName + prUser + prPassword + prHost + prPort + prSID + prNewPassword + prStatus + '|'
     stringArray.append(prName + prUser + prPassword + prHost + prPort + prSID + prNewPassword + prStatus + '|')
@@ -160,7 +177,7 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, s
     return stringArray
 
 def getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords):
-    host, port, sid = "", "", ""
+    host, port, sid, newPassword = "", "", "", ""
     isSID = True
     linebreak = "=" * 230
     stringArray = []
@@ -182,19 +199,25 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords)
         print "="*20 + " " + dsName + " " + "="*20
         dsUser = get("/JDBCSystemResources/"+ dsName +"/Resource/" + dsName + "/JDBCDriverParams/" + dsName + "/Properties/" + dsName + "/Properties/user/Value")
         dsPassword = ''
+        dsURL = ds.getJDBCResource().getJDBCDriverParams().getUrl().lower()
+        dsDriver = ds.getJDBCResource().getJDBCDriverParams().getDriverName()
+        #dsJNDI = dsResource.getJDBCDataSourceParams().getJNDINames()[0]
+
+        # Change Password if in passChangeList
         if (dsName in passwordChangeList) or getAllPasswords:
             dsPassword = getPassword(cService, dsName)
-            if ("oracle" in dsURL) and ("oracle" in dsDriver):
-                host, port, sid, isSID = getOracleDB(dsURL)
+            newPassword = NewGeneratePassword().generate_pass()
             state = manageDS(dsName, allServers, "shutdown")
+            if ("oracle" in dsURL) and ("oracle" in dsDriver.lower()):
+                host, port, sid, isSID = getOracleDB(dsURL)
+                db = OracleDB(dsURL,dsUser,dsPassword,dsDriver)
+                db.changePassword(newPassword)
+                changeDSPassword(cService, dsName, newPassword)
             if state != "offline":
                 manageDS(dsName,allServers,"start")
         dsStatus = manageDS(dsName, allServers)
-        dsURL = ds.getJDBCResource().getJDBCDriverParams().getUrl().lower()
-        dsDriver = ds.getJDBCResource().getJDBCDriverParams().getDriverName().lower()
-        #dsJNDI = dsResource.getJDBCDataSourceParams().getJNDINames()[0]
 
-        stringArray = printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, isSID)
+        stringArray = printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, newPassword, isSID)
     for string in stringArray:
         print string
 
@@ -210,9 +233,6 @@ def main():
     # you need to provide two parameters, environment and domain
     if environment == '' or domain == '' :
             print 'Please enter two parameters for environment and domain'
-
-    path = domain_path + domain 
-    security_path = path + "/security"
 
     # if the environment is QAM
     if environment == 'DEV' :
@@ -237,6 +257,9 @@ def main():
                     hostPort = '7010'
             if domain == 'osbdomain':
                     hostPort = '8010'
+
+    path = domain_path + domain 
+    security_path = path + "/security"
 
     connect( hostUser , hostPass , 't3://' + hostIP + ':' + hostPort )
 
