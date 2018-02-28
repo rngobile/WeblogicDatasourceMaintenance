@@ -158,6 +158,7 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords)
                 changeDSPassword(cService, dsName, newPassword)
             if state != "offline":
                 manageDS(dsName,allServers,"reset")
+                manageDS(dsName,allServers,"start")
         dsStatus = manageDS(dsName, allServers)
 
         stringArray = printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, newPassword, isSID)
