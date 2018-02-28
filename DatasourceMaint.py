@@ -160,8 +160,7 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords)
                 db = OracleDB(dsURL,dsUser,dsPassword,dsDriver)
                 db.changePassword(newPassword)
                 changeDSPassword(cService, dsName, newPassword)
-            if state != "offline":
-                manageDS(dsName,allServers,"reset")
+            if state == "offline":
                 manageDS(dsName,allServers,"start")
         dsStatus = manageDS(dsName, allServers)
 
