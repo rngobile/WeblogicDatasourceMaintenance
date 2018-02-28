@@ -12,7 +12,6 @@ class OracleDB:
         except Exception, e:
             print e
 
-    
     def changePassword(self, newPassword):
         self.newPassword = newPassword
         self.cursor = self.connection.cursor()

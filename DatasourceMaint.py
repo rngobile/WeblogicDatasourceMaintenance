@@ -160,12 +160,12 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords):
             if ("oracle" in dsURL) and ("oracle" in dsDriver.lower()):
                 host, port, sid, isSID = getOracleDB(dsURL)
                 db = OracleDB(dsURL,dsUser,dsPassword,dsDriver)
-                if db:
+                if hasattr(db, 'connection'):
                     newPassword = NewGeneratePassword().generate_pass()
                     db.changePassword(newPassword)
                     changeDSPassword(cService, dsName, newPassword)
                 else:
-                    print "Error: Database connection error, will skip password change"
+                    newPassword = 'Error: DB error"
             if state == "offline":
                 manageDS(dsName,allServers,"start")
         dsStatus = manageDS(dsName, allServers)
