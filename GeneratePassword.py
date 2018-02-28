@@ -9,7 +9,7 @@ class GeneratePassword:
         self.char_set = {'small': 'abcdefghijklmnopqrstuvwxyz',
                     'nums': '0123456789',
                     'big': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-                    'special': '^!%/=?{[]}+~#-_.:,;<>|\\'
+                    'special': '^!%=?{[]}+~#-_.:,;<>|\\'
                     }
 
     def generate_pass(self, length=25):
