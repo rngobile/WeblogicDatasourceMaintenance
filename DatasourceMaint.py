@@ -144,7 +144,6 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, s
     prPort = "|%s" % port.center(6)
     prStatus = "|%s" % dsStatus.center(50)
     prSID = "|%s" % sid.center(20)
-
     prNewPassword = "|%s" % NewGeneratePassword().generate_pass().center(30)
 
     #print prName + prUser + prPassword + prHost + prPort + prSID + prNewPassword + prStatus + '|'
@@ -158,6 +157,7 @@ def main():
     hostUser = 'weblogic'
     hostPass = 'welcome1'
     domain_path = '/u01/fmw/soa/user_projects/domains/'
+    passworChangeDS = ['rn_test']
 
     # you need to provide two parameters, environment and domain
     if environment == '' or domain == '' :
@@ -194,7 +194,7 @@ def main():
     encryptionService = SerializedSystemIni.getEncryptionService(path)
     cService = ClearOrEncryptedService(encryptionService)
 
-    getDatasourceInfo(cService)
+    getDatasourceInfo(cService, passworChangeDS)
         
     """
         db = OracleDB("192.168.254.134",1521,"soadb","rn_test",'\8f(F%hL?y6Hh[BaT]o2Fw\aZ',1)
