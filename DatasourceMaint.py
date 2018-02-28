@@ -50,6 +50,7 @@ def manageDS(dsName, allServers, command="testPool"):
                     status.append("[" + serverName + ":" + str(e) + "]")
             elif command == "shutdown":
                 if state != 'Shutdown':
+                    print "-- Shutting down " + dsName + " on " + serverName + " --"
                     try:
                         cmo.shutdown()
                     except Exception, e:
@@ -60,13 +61,14 @@ def manageDS(dsName, allServers, command="testPool"):
                     serverConfig()
                     return state
             elif command == "start":
+                print "-- Starting " + dsName + " on " + serverName + " --"
                 try:
                     cmo.start()
                 except Exception, e:
                     print e
-                print "dsName: " + state
                 return state
             elif command == "reset":
+                print "-- Restarting MBeans " + dsName + " on " + serverName + " --"
                 try:
                     cmo.reset()
                 except Exception, e:
@@ -160,9 +162,7 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords)
                 changeDSPassword(cService, dsName, newPassword)
             if state != "offline":
                 manageDS(dsName,allServers,"reset")
-                bringUp = "Shutdown"
-                while bringUp not "Shutdown":
-                    bringUp = manageDS(dsName,allServers,"start")
+                manageDS(dsName,allServers,"start")
         dsStatus = manageDS(dsName, allServers)
 
         stringArray = printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, newPassword, isSID)
