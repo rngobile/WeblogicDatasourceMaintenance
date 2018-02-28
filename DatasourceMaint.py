@@ -80,11 +80,14 @@ def getDSStatus(dsname, allServers):
         datasources = jdbcRuntime.getJDBCDataSourceRuntimeMBeans()
         if "Name="+dsname+"," in str(datasources):
             cd('/ServerRuntimes/'+ serverName +'/JDBCServiceRuntime/' + serverName +'/JDBCDataSourceRuntimeMBeans/' + dsname)
-            state = cmo.testPool()
-            if state:
-                status.append("[" + serverName + ":" + str(state) + "]")
-            else:
-                status.append("[" + serverName + ":OK]")
+            try:
+                state = cmo.testPool()
+                    if state:
+                        status.append("[" + serverName + ":" + str(state) + "]")
+                    else:
+                        status.append("[" + serverName + ":OK]")
+            except Exception, e:
+                status.append("[" + serverName + ":" + str(e) + "]")
     serverConfig()
     return str(status)
 
