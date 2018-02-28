@@ -206,7 +206,6 @@ def main():
         cService = ClearOrEncryptedService(encryptionService)
 
     allServers=domainRuntimeService.getServerRuntimes()
-
     getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords)
         
 if __name__ == 'main':
