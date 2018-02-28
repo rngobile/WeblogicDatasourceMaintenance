@@ -212,7 +212,7 @@ def main():
 
     connect( hostUser , hostPass , 't3://' + hostIP + ':' + hostPort )
 
-    if passwordChangeList or listPasswords:
+    if passwordChangeList or dumpPasswords:
         encryptionService = SerializedSystemIni.getEncryptionService(security_path)
         cService = ClearOrEncryptedService(encryptionService)
 
