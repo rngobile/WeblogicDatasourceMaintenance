@@ -118,7 +118,7 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, s
     stringArray.append(linebreak)
     return stringArray
 
-def getDatasourceInfo(cService, passwordChangeList, getAllPasswords):
+def getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords):
     linebreak = "=" * 230
     stringArray = []
     stringArray.append(linebreak)
