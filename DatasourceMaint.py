@@ -71,7 +71,7 @@ def getDatasourceState(dsName,command="testPool"):
     serverConfig()
     return status
 
-def getDSStatus(dsname, allServers):
+def manageDS(dsname, allServers, command="testPool"):
     domainRuntime()
     status = []
     for server in allServers:
@@ -80,16 +80,35 @@ def getDSStatus(dsname, allServers):
         datasources = jdbcRuntime.getJDBCDataSourceRuntimeMBeans()
         if "Name="+dsname+"," in str(datasources):
             cd('/ServerRuntimes/'+ serverName +'/JDBCServiceRuntime/' + serverName +'/JDBCDataSourceRuntimeMBeans/' + dsname)
-            try:
-                state = cmo.testPool()
-                    if state:
-                        status.append("[" + serverName + ":" + str(state) + "]")
-                    else:
-                        status.append("[" + serverName + ":OK]")
-            except Exception, e:
-                status.append("[" + serverName + ":" + str(e) + "]")
+            if command == "testPool":
+                try:
+                    state = cmo.testPool()
+                        if state:
+                            status.append("[" + serverName + ":" + str(state) + "]")
+                        else:
+                            status.append("[" + serverName + ":OK]")
+                except Exception, e:
+                    status.append("[" + serverName + ":" + str(e) + "]")
+                serverConfig()
+                return str(status)
+            elif command == "shutdown"
+                if cmo.getState != 'Running'
+                    try:
+                        cmo.shutdown()
+                    except Exception, e:
+                        print e
+                    serverConfig()
+                    return None
+                else:
+                    serverConfig()
+                    return state
+            else command == "start"
+                try:
+                    cmo.start()
+                except Exception, e:
+                    print e
     serverConfig()
-    return str(status)
+    return None
 
 def getOracleDB(dsURL):
     print "dsURL: " + str(dsURL)
@@ -165,8 +184,12 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords)
             dsPassword = getPassword(cService, dsName)
             if ("oracle" in dsURL) and ("oracle" in dsDriver):
                 host, port, sid, isSID = getOracleDB(dsURL)
+            state = manageDS(dsname, allServers, "shutdown"):
+            if not state:
+                manageDS(dsname,allServers,"start")
+
         #dsStatus = getDatasourceState(dsName)
-        dsStatus = getDSStatus(dsName, allServers)
+        dsStatus = manageDS(dsName, allServers)
         dsURL = ds.getJDBCResource().getJDBCDriverParams().getUrl().lower()
         dsDriver = ds.getJDBCResource().getJDBCDriverParams().getDriverName().lower()
         #dsJNDI = dsResource.getJDBCDataSourceParams().getJNDINames()[0]
