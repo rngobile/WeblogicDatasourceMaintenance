@@ -26,6 +26,15 @@ def getPassword(cService, dsname):
         passwordAES += chr(asciiCode)
     return cService.decrypt(passwordAES)
 
+def getDSResource(dsName):
+    dsResources = domainRuntimeService.getDomainConfiguration().getJDBCSystemResources()
+    if "Name="+dsName+"," in str(dsResources):
+        for dsResource in dsResources:
+            if dsName == dsResource.getName():
+                return dsResource
+    else:
+        print "Error: No MBean Resource Found."
+
 def manageDS(dsName, allServers, command="testPool"):
     domainRuntime()
     status = []
@@ -68,7 +77,15 @@ def manageDS(dsName, allServers, command="testPool"):
                     print e
                 return state
             elif command == "reset":
+                print "-- Resetting " + dsName + " on " + serverName + " --"
+                try:
+                    cmo.reset()
+                except Exception, e:
+                    print e
+            elif command == "restartMBean":
                 print "-- Restarting MBeans " + dsName + " on " + serverName + " --"
+                dsResourceMBean = getDSResource('dsName')
+                domainRuntimeService.getDomainRuntime().restartSystemResource(dsResourceMBean)
                 try:
                     cmo.reset()
                 except Exception, e:
@@ -160,18 +177,14 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords):
             if ("oracle" in dsURL) and ("oracle" in dsDriver.lower()):
                 host, port, sid, isSID = getOracleDB(dsURL)
                 db = OracleDB(dsURL,dsUser,dsPassword,dsDriver)
-<<<<<<< HEAD
-                print "-- db: " + str(db)
-                if db:
-=======
                 if hasattr(db, 'connection'):
->>>>>>> 8b144ce475fb8a15c70a43bbbeb97dd16a8db095
                     newPassword = NewGeneratePassword().generate_pass()
                     db.changePassword(newPassword)
                     changeDSPassword(cService, dsName, newPassword)
                 else:
                     newPassword = 'Error: DB error'
             if state == "offline":
+                manageDS(dsName,allServers,"restartMBean")
                 manageDS(dsName,allServers,"start")
         dsStatus = manageDS(dsName, allServers)
 
