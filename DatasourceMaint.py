@@ -71,6 +71,23 @@ def getDatasourceState(dsName,command="testPool"):
     serverConfig()
     return status
 
+def getDSStatus(dsname, allServers):
+    domainRuntime()
+    status = []
+    for server in allServers:
+        serverName = server.getName()
+        jdbcRuntime = server.getJDBCServiceRuntime()
+        datasources = jdbcRuntime.getJDBCDataSourceRuntimeMBeans()
+        if "Name="+dsname+"," in str(datasources):
+            cd('/ServerRuntimes/'+ serverName +'/JDBCServiceRuntime/' + serverName +'/JDBCDataSourceRuntimeMBeans/' + dsname)
+            state = cmo.testPool()
+            if state:
+                status.append("[" + serverName + ":" + str(state) + "]")
+            else:
+                status.append("[" + serverName + ":OK]")
+    serverConfig()
+    return str(status)
+
 def getOracleDB(dsURL):
     print "dsURL: " + str(dsURL)
     if len(dsURL.split('@')) == 2:
@@ -119,7 +136,7 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, s
     return stringArray
 
 def getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords):
-    host, port, sid = ""
+    host, port, sid = "", "", ""
     isSID = True
     linebreak = "=" * 230
     stringArray = []
@@ -145,7 +162,8 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords)
             dsPassword = getPassword(cService, dsName)
             if ("oracle" in dsURL) and ("oracle" in dsDriver):
                 host, port, sid, isSID = getOracleDB(dsURL)
-        dsStatus = getDatasourceState(dsName)
+        #dsStatus = getDatasourceState(dsName)
+        dsStatus = getDSStatus(dsName, allServers)
         dsURL = ds.getJDBCResource().getJDBCDriverParams().getUrl().lower()
         dsDriver = ds.getJDBCResource().getJDBCDriverParams().getDriverName().lower()
         #dsJNDI = dsResource.getJDBCDataSourceParams().getJNDINames()[0]
