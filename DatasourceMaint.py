@@ -119,6 +119,8 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, s
     return stringArray
 
 def getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords):
+    host, port, sid = ""
+    isSID = True
     linebreak = "=" * 230
     stringArray = []
     stringArray.append(linebreak)
@@ -141,11 +143,11 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords)
         dsPassword = ''
         if (dsName in passwordChangeList) or getAllPasswords:
             dsPassword = getPassword(cService, dsName)
+            if ("oracle" in dsURL) and ("oracle" in dsDriver):
+                host, port, sid, isSID = getOracleDB(dsURL)
         dsStatus = getDatasourceState(dsName)
         dsURL = ds.getJDBCResource().getJDBCDriverParams().getUrl().lower()
         dsDriver = ds.getJDBCResource().getJDBCDriverParams().getDriverName().lower()
-        if ("oracle" in dsURL) and ("oracle" in dsDriver):
-            host, port, sid, isSID = getOracleDB(dsURL)
         #dsJNDI = dsResource.getJDBCDataSourceParams().getJNDINames()[0]
 
         stringArray = printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, isSID)
