@@ -156,14 +156,14 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords):
         if dsName in passwordChangeList:
             if not dumpPasswords:
                 dsPassword = getPassword(cService, dsName)
-            newPassword = NewGeneratePassword().generate_pass()
             state = manageDS(dsName, allServers, "shutdown")
             if ("oracle" in dsURL) and ("oracle" in dsDriver.lower()):
                 host, port, sid, isSID = getOracleDB(dsURL)
-                error = db = OracleDB(dsURL,dsUser,dsPassword,dsDriver)
-                if error:
-                    print str(error)
+                db = OracleDB(dsURL,dsUser,dsPassword,dsDriver)
+                if "error" in str(db).lower():
+                    print str(db)
                 else:
+                    newPassword = NewGeneratePassword().generate_pass()
                     db.changePassword(newPassword)
                     changeDSPassword(cService, dsName, newPassword)
             if state == "offline":
