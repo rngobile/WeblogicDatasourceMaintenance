@@ -7,7 +7,7 @@ from OracleDB import *
 
 def changeDSPassword(cService, dsName, newPassword):
     try:
-        print "-- Changing " + dsName + " password --"
+        print "-- Changing weblogic " + dsName + " password --"
         edit()
         startEdit()
         encryptedPassword = cService.encrypt(newPassword)
@@ -118,12 +118,11 @@ def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, s
     prSID = "|%s" % sid.center(20)
     prNewPassword = "|%s" % newPassword.center(30)
 
-    #print prName + prUser + prPassword + prHost + prPort + prSID + prNewPassword + prStatus + '|'
     stringArray.append(prName + prUser + prPassword + prHost + prPort + prSID + prNewPassword + prStatus + '|')
     stringArray.append(linebreak)
     return stringArray
 
-def getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords):
+def getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords):
     host, port, sid, newPassword = "", "", "", ""
     isSID = True
     linebreak = "=" * 230
@@ -151,7 +150,7 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords)
         #dsJNDI = dsResource.getJDBCDataSourceParams().getJNDINames()[0]
 
         # Change Password if in passChangeList
-        if (dsName in passwordChangeList) or getAllPasswords:
+        if (dsName in passwordChangeList) or dumpPasswords:
             dsPassword = getPassword(cService, dsName)
             newPassword = NewGeneratePassword().generate_pass()
             state = manageDS(dsName, allServers, "shutdown")
@@ -175,7 +174,7 @@ def main():
     hostPass = 'welcome1'
     domain_path = '/u01/fmw/soa/user_projects/domains/'
     passwordChangeList = ['rntest']
-    getAllPasswords = False
+    dumpPasswords = False
 
     # you need to provide two parameters, environment and domain
     if environment == '' or domain == '' :
@@ -183,9 +182,7 @@ def main():
 
     # if the environment is QAM
     if environment == 'DEV' :
-
             hostIP = '172.x.x.x'
-
             if domain == 'SYNC':
                     hostPort = '8001'
             if domain == 'ASYNC':
@@ -195,9 +192,7 @@ def main():
 
     # If my environment is Production
     if environment == 'PROD' :
-
             hostIP = '192.168.254.134'
-
             if domain == 'compact_domain':
                     hostPort = '7001'
             if domain == 'soadomain':
@@ -215,7 +210,7 @@ def main():
         cService = ClearOrEncryptedService(encryptionService)
 
     allServers=domainRuntimeService.getServerRuntimes()
-    getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords)
+    getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords)
         
 if __name__ == 'main':
     main()
