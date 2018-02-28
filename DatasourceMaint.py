@@ -165,7 +165,7 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords):
                     db.changePassword(newPassword)
                     changeDSPassword(cService, dsName, newPassword)
                 else:
-                    newPassword = 'Error: DB error"
+                    newPassword = 'Error: DB error'
             if state == "offline":
                 manageDS(dsName,allServers,"start")
         dsStatus = manageDS(dsName, allServers)
