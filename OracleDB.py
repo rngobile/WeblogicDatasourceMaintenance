@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 from com.ziclix.python.sql import zxJDBC
 
 class OracleDB:
@@ -15,7 +14,7 @@ class OracleDB:
         self.newPassword = newPassword
         self.cursor = self.connection.cursor()
         try:
-            sql = 'alter user %s identified by %s' % (self.user, self.newPassword)
+            sql = 'alter user %s identified by "%s"' % (self.user, self.newPassword)
             self.cursor.execute(sql)
             #self.connection.commit()
         finally:
