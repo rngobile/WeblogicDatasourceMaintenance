@@ -71,44 +71,46 @@ def getDatasourceState(dsName,command="testPool"):
     serverConfig()
     return status
 
-def manageDS(dsname, allServers, command="testPool"):
+def manageDS(dsName, allServers, command="testPool"):
     domainRuntime()
     status = []
     for server in allServers:
         serverName = server.getName()
         jdbcRuntime = server.getJDBCServiceRuntime()
         datasources = jdbcRuntime.getJDBCDataSourceRuntimeMBeans()
-        if "Name="+dsname+"," in str(datasources):
-            cd('/ServerRuntimes/'+ serverName +'/JDBCServiceRuntime/' + serverName +'/JDBCDataSourceRuntimeMBeans/' + dsname)
+        if "Name="+dsName+"," in str(datasources):
+            cd('/ServerRuntimes/'+ serverName +'/JDBCServiceRuntime/' + serverName +'/JDBCDataSourceRuntimeMBeans/' + dsName)
+            state = cmo.getState()
             if command == "testPool":
                 try:
-                    state = cmo.testPool()
-                        if state:
-                            status.append("[" + serverName + ":" + str(state) + "]")
+                    if state in ("Shutdown","Suspended","Overloaded"):
+                        status.append("[" + serverName + ":" + state + "]")
+                    else:
+                        test = cmo.testPool()
+                        if test:
+                            status.append("[" + serverName + ":" + str(test) + "]")
                         else:
                             status.append("[" + serverName + ":OK]")
                 except Exception, e:
                     status.append("[" + serverName + ":" + str(e) + "]")
-                serverConfig()
-                return str(status)
-            elif command == "shutdown"
-                if cmo.getState != 'Running'
+            elif command == "shutdown":
+                if state != 'Shutdown':
                     try:
                         cmo.shutdown()
                     except Exception, e:
                         print e
                     serverConfig()
-                    return None
+                    return "offline"
                 else:
                     serverConfig()
                     return state
-            else command == "start"
+            elif command == "start":
                 try:
                     cmo.start()
                 except Exception, e:
                     print e
     serverConfig()
-    return None
+    return str(status)
 
 def getOracleDB(dsURL):
     print "dsURL: " + str(dsURL)
@@ -184,11 +186,9 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, getAllPasswords)
             dsPassword = getPassword(cService, dsName)
             if ("oracle" in dsURL) and ("oracle" in dsDriver):
                 host, port, sid, isSID = getOracleDB(dsURL)
-            state = manageDS(dsname, allServers, "shutdown"):
-            if not state:
-                manageDS(dsname,allServers,"start")
-
-        #dsStatus = getDatasourceState(dsName)
+            state = manageDS(dsName, allServers, "shutdown")
+            if state != "offline":
+                manageDS(dsName,allServers,"start")
         dsStatus = manageDS(dsName, allServers)
         dsURL = ds.getJDBCResource().getJDBCDriverParams().getUrl().lower()
         dsDriver = ds.getJDBCResource().getJDBCDriverParams().getDriverName().lower()
