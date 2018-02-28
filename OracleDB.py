@@ -8,7 +8,11 @@ class OracleDB:
         self.password = password
         self.dsDriver = dsDriver
 
-        self.connection = zxJDBC.connect(self.dsURL, self.user, self.password, self.dsDriver)
+        try:
+            self.connection = zxJDBC.connect(self.dsURL, self.user, self.password, self.dsDriver)
+        except Exception, e:
+            print e
+
     
     def changePassword(self, newPassword):
         self.newPassword = newPassword

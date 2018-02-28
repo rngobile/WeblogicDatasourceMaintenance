@@ -149,9 +149,13 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords):
         dsDriver = ds.getJDBCResource().getJDBCDriverParams().getDriverName()
         #dsJNDI = dsResource.getJDBCDataSourceParams().getJNDINames()[0]
 
-        # Change Password if in passChangeList
-        if (dsName in passwordChangeList) or dumpPasswords:
+        if dumpPasswords:
             dsPassword = getPassword(cService, dsName)
+
+        # Change Password if in passChangeList
+        if dsName in passwordChangeList:
+            if not dumpPasswords:
+                dsPassword = getPassword(cService, dsName)
             newPassword = NewGeneratePassword().generate_pass()
             state = manageDS(dsName, allServers, "shutdown")
             if ("oracle" in dsURL) and ("oracle" in dsDriver.lower()):
