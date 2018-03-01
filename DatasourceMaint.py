@@ -4,6 +4,7 @@ from weblogic.security.internal import *
 from weblogic.security.internal.encryption import *
 from NewGeneratePassword import *
 from OracleDB import *
+import ConfigParser
 import time as systime
 
 def changeDSPassword(cService, dsName, newPassword):
@@ -163,12 +164,14 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords):
         dsDriver = ds.getJDBCResource().getJDBCDriverParams().getDriverName()
         #dsJNDI = dsResource.getJDBCDataSourceParams().getJNDINames()[0]
 
-        if dumpPasswords:
+        if dumpPasswords in ['TRUE','T']:
             dsPassword = getPassword(cService, dsName)
+            if ("oracle" in dsURL) and ("oracle" in dsDriver.lower()):
+                host, port, sid, isSID = getOracleDB(dsURL)
 
         # Change Password if in passChangeList
         if dsName in passwordChangeList:
-            if not dumpPasswords:
+            if dumpPasswords not in ['TRUE','T']:
                 dsPassword = getPassword(cService, dsName)
             state = manageDS(dsName, allServers, "shutdown")
             if ("oracle" in dsURL) and ("oracle" in dsDriver.lower()):
@@ -182,7 +185,7 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords):
                     newPassword = 'Error: DB error'
             if state == "offline":
                 manageDS(dsName,allServers,"restartMBean")
-                systime.sleep(1)
+                systime.sleep(3)
                 #manageDS(dsName,allServers,"start")
         dsStatus = manageDS(dsName, allServers)
 
@@ -193,46 +196,33 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords):
 def main():
     environment = sys.argv[1]
     domain = sys.argv[2]
-    hostUser = 'weblogic'
-    hostPass = 'welcome1'
-    #userKey = '<path_to_userkeyFile>'
-    #configFile = '<path_to_configFile>'
+    config = ConfigParser.ConfigParser()
+    config.read('config.ini')
 
-    domain_path = '/u01/fmw/soa/user_projects/domains/'
-    passwordChangeList = ['rntest']
-    dumpPasswords = False
+    # Get variables from config file
+    realm = environment.upper() + '.' + domain.upper()
+    host = config.get(realm, 'host')
+    port = config.get(realm, 'port')
+    user = config.get(realm, 'user')
+    password = config.get(realm, 'password')
+    userKeyPath = config.get(realm, 'userKeyPath')
+    configFilePath = config.get(realm, 'configFilePath')
+    domainPath = config.get(realm, 'domainPath')
+    passwordChangeList = config.get(realm, 'passwordChangeList') 
+    dumpPasswords = config.get(realm, 'dumpPasswords').upper()
+    t3url = 't3://' + host + ':' + port
 
-    # you need to provide two parameters, environment and domain
-    if environment == '' or domain == '' :
-            print 'Please enter two parameters for environment and domain'
-
-    # if the environment is QAM
-    if environment == 'DEV' :
-            hostIP = '172.x.x.x'
-            if domain == 'SYNC':
-                    hostPort = '8001'
-            if domain == 'ASYNC':
-                    hostPort = '8002'
-            if domain == 'RSYNC':
-                    hostPort = '8003'
-
-    # If my environment is Production
-    if environment == 'PROD' :
-            hostIP = '192.168.254.134'
-            if domain == 'compact_domain':
-                    hostPort = '7001'
-            if domain == 'soadomain':
-                    hostPort = '7010'
-            if domain == 'osbdomain':
-                    hostPort = '8010'
-
-    path = domain_path + domain 
+    path = domainPath + domain 
     security_path = path + "/security"
 
-    connect( hostUser , hostPass , 't3://' + hostIP + ':' + hostPort )
-    #connect(userConfigFile=configFile, userKeyFile=userKey, url='t3://'+hostIP+':'+hostPort)
+    if userKeyPath and configFilePath:
+        connect(userConfigFile=configFile, userKeyFile=userKey, url=t3url)
+    elif user and password:
+        connect( user , password , t3url)
+    else:
+        sys.exit("Error: Please assign correct credentials in config file.")
 
-    if passwordChangeList or dumpPasswords:
+    if passwordChangeList or (dumpPasswords in ['TRUE','T']):
         encryptionService = SerializedSystemIni.getEncryptionService(security_path)
         cService = ClearOrEncryptedService(encryptionService)
 
