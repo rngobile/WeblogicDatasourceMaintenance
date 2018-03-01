@@ -17,7 +17,6 @@ def main():
         {'name': 'Kanchalita', 'age': 25},
         {'name': 'Steven', 'age': 27}
     ]
-
     headerNames = ['name','age']
 
     buildTable(dictionaryList, headerNames)
