@@ -4,6 +4,7 @@ from weblogic.security.internal import *
 from weblogic.security.internal.encryption import *
 from NewGeneratePassword import *
 from OracleDB import *
+import time as systime
 
 def changeDSPassword(cService, dsName, newPassword):
     try:
@@ -84,12 +85,8 @@ def manageDS(dsName, allServers, command="testPool"):
                     print e
             elif command == "restartMBean":
                 print "-- Restarting MBeans " + dsName + " on " + serverName + " --"
-                dsResourceMBean = getDSResource('dsName')
+                dsResourceMBean = getDSResource(dsName)
                 domainRuntimeService.getDomainRuntime().restartSystemResource(dsResourceMBean)
-                try:
-                    cmo.reset()
-                except Exception, e:
-                    print e
     serverConfig()
     return str(status)
 
@@ -185,7 +182,8 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords):
                     newPassword = 'Error: DB error'
             if state == "offline":
                 manageDS(dsName,allServers,"restartMBean")
-                manageDS(dsName,allServers,"start")
+                systime.sleep(1)
+                #manageDS(dsName,allServers,"start")
         dsStatus = manageDS(dsName, allServers)
 
         stringArray = printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, newPassword, isSID)
