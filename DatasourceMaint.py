@@ -162,7 +162,7 @@ def printDatasourceInfo(dataList):
     mon = TableBuilder(monitorList, dataList)
 
     columnLength = mon.buildTable(monitorList, dataList)
-    mon.printTable(monitorList, dataList)
+    mon.printTable(monitorList, dataList, columnLength)
     print "\n"
     columnLength = tb.buildTable(headerList, dataList)
     tb.printTable(headerList, dataList, columnLength)
