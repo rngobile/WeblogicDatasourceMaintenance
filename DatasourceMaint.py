@@ -195,6 +195,9 @@ def main():
     domain = sys.argv[2]
     hostUser = 'weblogic'
     hostPass = 'welcome1'
+    #userKey = '<path_to_userkeyFile>'
+    #configFile = '<path_to_configFile>'
+
     domain_path = '/u01/fmw/soa/user_projects/domains/'
     passwordChangeList = ['rntest']
     dumpPasswords = False
@@ -227,6 +230,7 @@ def main():
     security_path = path + "/security"
 
     connect( hostUser , hostPass , 't3://' + hostIP + ':' + hostPort )
+    #connect(userConfigFile=configFile, userKeyFile=userKey, url='t3://'+hostIP+':'+hostPort)
 
     if passwordChangeList or dumpPasswords:
         encryptionService = SerializedSystemIni.getEncryptionService(security_path)
