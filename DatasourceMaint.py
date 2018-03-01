@@ -2,10 +2,11 @@
 import sys,os,re
 from weblogic.security.internal import *
 from weblogic.security.internal.encryption import *
-from NewGeneratePassword import *
-from OracleDB import *
 import ConfigParser
 import time as systime
+from NewGeneratePassword import *
+from OracleDB import *
+from TableBuilder import *
 
 def changeDSPassword(cService, dsName, newPassword):
     try:
@@ -38,15 +39,38 @@ def getDSResource(dsName):
         print "Error: No MBean Resource Found."
 
 def manageDS(dsName, allServers, command="testPool"):
-    domainRuntime()
     status = []
+    while True:
+        try:
+            domainRuntime()
+        except:
+            print "Retrying to Runtime.."
+            systime.sleep(2)
+            continue
+        break
     for server in allServers:
         serverName = server.getName()
         jdbcRuntime = server.getJDBCServiceRuntime()
         datasources = jdbcRuntime.getJDBCDataSourceRuntimeMBeans()
         if "Name="+dsName+"," in str(datasources):
-            cd('/ServerRuntimes/'+ serverName +'/JDBCServiceRuntime/' + serverName +'/JDBCDataSourceRuntimeMBeans/' + dsName)
-            state = cmo.getState()
+            while True:
+                try:
+                   cd('/ServerRuntimes/'+ serverName +'/JDBCServiceRuntime/' + serverName +'/JDBCDataSourceRuntimeMBeans/' + dsName)
+                except:
+                    print "Retrying to attach to Runtime Path.."
+                    systime.sleep(2)
+                    continue
+                break
+            
+            while True:
+                try:
+                    state = cmo.getState()
+                except:
+                    print "Retrying to check State.."
+                    systime.sleep(2)
+                    continue
+                break
+
             if command == "testPool":
                 try:
                     if state in ("Shutdown","Suspended","Overloaded"):
@@ -120,39 +144,33 @@ def getOracleDB(dsURL):
         
     return hostname, port, sid, isSID
 
-def printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, newPassword="",isSID=True):
-    #update: make this into an array
-    linebreak = '=' * 230
-    prName = "|%s" % dsName.ljust(25)
-    prUser = "|%s" % dsUser.center(30)
-    prPassword = "|%s" % dsPassword.center(30)
-    #prPassword = "|%s" % "<redacted>".center(30)
-    prHost = "|%s" % host.center(30)
-    prPort = "|%s" % port.center(6)
-    prStatus = "|%s" % dsStatus.center(50)
-    prSID = "|%s" % sid.center(20)
-    prNewPassword = "|%s" % newPassword.center(30)
+def printDatasourceInfo(dataList):
+    headerList = ['Datasource',
+                  'Username',
+                  'Password',
+                  'Host',
+                  'Port',
+                  'SID/Service Name',
+                  'New Password'
+    ]
 
-    stringArray.append(prName + prUser + prPassword + prHost + prPort + prSID + prNewPassword + prStatus + '|')
-    stringArray.append(linebreak)
-    return stringArray
+    monitorList = ['Datasource',
+                   'Status'
+    ]
+
+    tb = TableBuilder(headerList, dataList)
+    mon = TableBuilder(monitorList, dataList)
+
+    columnLength = mon.buildTable(monitorList, dataList)
+    mon.printTable(monitorList, dataList)
+    print "\n"
+    columnLength = tb.buildTable(headerList, dataList)
+    tb.printTable(headerList, dataList, columnLength)
 
 def getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords):
     host, port, sid, newPassword = "", "", "", ""
     isSID = True
-    linebreak = "=" * 230
-    stringArray = []
-    stringArray.append(linebreak)
-    stringArray.append('|%s' % "Datasource".ljust(25) +
-                        '|%s' % "Username".center(30) +
-                        '|%s' % "Password".center(30) +
-                        '|%s' % "Host".center(30) +
-                        '|%s' % "Port".center(6) +
-                        '|%s' % "SID/Service Name".center(20) +
-                        '|%s' % "NewPassword".center(30) +
-                        '|%s' % "Status".center(50)  + '|'
-    )
-    stringArray.append(linebreak)
+    dataList = []
 
     allJDBCResources = cmo.getJDBCSystemResources()
     for ds in allJDBCResources:
@@ -185,13 +203,21 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords):
                     newPassword = 'Error: DB error'
             if state == "offline":
                 manageDS(dsName,allServers,"restartMBean")
-                systime.sleep(3)
                 #manageDS(dsName,allServers,"start")
         dsStatus = manageDS(dsName, allServers)
 
-        stringArray = printDatasourceInfo(dsName, dsUser, dsPassword, dsStatus, host, port, sid, stringArray, newPassword, isSID)
-    for string in stringArray:
-        print string
+        dataItem = { "Datasource": dsName,
+                     "Username": dsUser,
+                     "Password": dsPassword,
+                     "Host": host,
+                     "Port": port,
+                     "SID/Service Name": sid,
+                     "New Password": newPassword,
+                     "Status": dsStatus
+        }
+
+        dataList.append(dataItem)
+    return dataList
 
 def main():
     environment = sys.argv[1]
@@ -225,7 +251,9 @@ def main():
         cService = ClearOrEncryptedService(encryptionService)
 
     allServers=domainRuntimeService.getServerRuntimes()
-    getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords)
+
+    dataList = getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords)
+    printDatasourceInfo(dataList)
         
 if __name__ == 'main':
     main()
