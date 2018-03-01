@@ -4,7 +4,7 @@ class TableBuilder:
         self.dictionaryList = dictionaryList
         self.headerNames = headerNames
 
-    def printTable(headerNames, dictionaryList, columnLength):
+    def printTable(self, headerNames, dictionaryList, columnLength):
         linebreak = "=" * (sum(columnLength) + len(self.headerNames))
         print linebreak
         for i in range(0, len(self.headerNames)):
@@ -16,8 +16,7 @@ class TableBuilder:
                 print '|%s' % self.headerNames[i].center(columnLength[i]),
         print linebreak
 
-
-    def buildTable(headerNames=[], dictionaryList=[] ):
+    def buildTable(self, headerNames=[], dictionaryList=[]):
         columnLength = [None] * len(self.headerNames)
         for i in range(0,len(self.headerNames)):
             columnLength[i] = len(self.headerNames[i])+2
