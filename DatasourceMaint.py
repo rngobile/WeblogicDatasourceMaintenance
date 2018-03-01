@@ -208,12 +208,10 @@ def main():
     userKeyPath = config.get(realm, 'userKeyPath')
     configFilePath = config.get(realm, 'configFilePath')
     domainPath = config.get(realm, 'domainPath')
-    passwordChangeList = config.get(realm, 'passwordChangeList').split(,) 
+    passwordChangeList = config.get(realm, 'passwordChangeList').split(',') 
     dumpPasswords = config.get(realm, 'dumpPasswords').upper()
     t3url = 't3://' + host + ':' + port
-
     path = domainPath + domain 
-    security_path = path + "/security"
 
     if userKeyPath and configFilePath:
         connect(userConfigFile=configFile, userKeyFile=userKey, url=t3url)
@@ -223,7 +221,7 @@ def main():
         sys.exit("Error: Please assign correct credentials in config file.")
 
     if passwordChangeList or (dumpPasswords in ['TRUE','T']):
-        encryptionService = SerializedSystemIni.getEncryptionService(security_path)
+        encryptionService = SerializedSystemIni.getEncryptionService(path)
         cService = ClearOrEncryptedService(encryptionService)
 
     allServers=domainRuntimeService.getServerRuntimes()
