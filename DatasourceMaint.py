@@ -208,7 +208,7 @@ def main():
     userKeyPath = config.get(realm, 'userKeyPath')
     configFilePath = config.get(realm, 'configFilePath')
     domainPath = config.get(realm, 'domainPath')
-    passwordChangeList = config.get(realm, 'passwordChangeList') 
+    passwordChangeList = config.get(realm, 'passwordChangeList').split(,) 
     dumpPasswords = config.get(realm, 'dumpPasswords').upper()
     t3url = 't3://' + host + ':' + port
 
