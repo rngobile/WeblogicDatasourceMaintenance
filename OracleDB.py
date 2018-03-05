@@ -17,7 +17,7 @@ class OracleDB:
         self.newPassword = newPassword
         self.cursor = self.connection.cursor()
         try:
-            sql = 'alter user %s identified by "%s"' % (self.user, self.newPassword)
+            sql = 'alter user %s identified by "%s" replace "%s"' % (self.user, self.newPassword, self.password)
             self.cursor.execute(sql)
             #self.connection.commit()
         finally:
