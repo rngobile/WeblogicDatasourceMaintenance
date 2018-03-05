@@ -55,6 +55,11 @@ You should configure the following variables inside the script:
 **BASE_DOMAIN**=*This is the path to the base domain directory*  
 **SCRIPT_PATH**=*The path where DatasourceMaint.py is located*  
 
+Make the script executable to the user:
+```
+chmod +x DatasourceMaintenance.sh
+```
+
 Example:
 ```
 BASE_DOMAIN=/u01/app/oracle/projects/aserver/domains
