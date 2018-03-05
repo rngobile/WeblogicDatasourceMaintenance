@@ -178,7 +178,7 @@ def getDatasourceInfo(allServers, cService, passwordChangeList, dumpPasswords):
         print "="*20 + " " + dsName + " " + "="*20
         dsUser = get("/JDBCSystemResources/"+ dsName +"/Resource/" + dsName + "/JDBCDriverParams/" + dsName + "/Properties/" + dsName + "/Properties/user/Value")
         dsPassword = ''
-        dsURL = ds.getJDBCResource().getJDBCDriverParams().getUrl().lower()
+        dsURL = ds.getJDBCResource().getJDBCDriverParams().getUrl().lower().replace(' ','')
         dsDriver = ds.getJDBCResource().getJDBCDriverParams().getDriverName()
         #dsJNDI = dsResource.getJDBCDataSourceParams().getJNDINames()[0]
 
